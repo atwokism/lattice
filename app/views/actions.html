@@ -1,0 +1,27 @@
+<div class="row">
+    <div id="myinbox" class="span5">
+        <small>
+            <div>
+                <table class="table table-condensed table-bordered">
+                    <tr ng-repeat="action in viewmodel.actions">
+                        <td>
+                            <a href=" {{ '#/action/' + action.id }}" ng-click="navclick('action', action)">
+                                <div align="center">@{{ action.memberCreator.username }} {{ action.type }}</div>
+                            </a>
+                        </td> 
+                        <td>
+                            <a href=" {{ '#/card/' + action.data.card.id }}" ng-click="navclick('card', action.data.card)">
+                                <div align="left">{{ action.data.card.name }}</div>
+                            </a>
+                        </td>                    
+                        <td>
+                            <a href=" {{ '#/board/' + action.data.board.id }}" ng-click="navclick('board', action.data.board)">
+                                <div align="left">{{ action.data.board.name }} <i>({{ action.data.list.name }})</i></div>
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </small>    
+    </div>    
+</div>

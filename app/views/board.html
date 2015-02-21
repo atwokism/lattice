@@ -1,0 +1,21 @@
+<div class="row">
+    <div class="span6">
+        <div class="row">
+            <div class="span5 lead">
+                <p class="lead">Board: {{ currentboard().name }}</p>
+                <div>
+                    <form>
+                        <fieldset>
+                            <label class="checkbox">
+                                <input type="checkbox" ng-click="boardactive(board)" ng-model="currentboard().active"> Active
+                            </label>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>    
+        </div>
+        <ul class="nav nav-pills" id="navboardlist">
+            <li class="active" id="navboarddone"><a ng-click="navback()">Done</span></a></li>
+        </ul>
+    </div>
+</div>

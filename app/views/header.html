@@ -1,0 +1,13 @@
+<h3>Lattice.io</h3>
+<div>
+    <form class="form-inline" onsubmit="return false;" id="access_form1">
+        <div ng-if="isConnected() == false">
+            <button class="btn btn-primary" type="button" id="signin_button"
+                    ng-click="connect('/lattice/app/index.html#/boards', '1hour')">Sign in</button>
+        </div>
+        <div ng-if="isConnected()">
+            <button class="btn btn-primary" type="button" id="signout_button"
+                        ng-click="disconnect()">Sign out {{ member + ' (@' + userTag + ')' }}</button>
+        </div>
+    </form>
+</div>

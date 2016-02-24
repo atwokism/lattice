@@ -1,3 +1,8 @@
+/**
+ * Webhooks instance
+ *
+ * @author Ezra K <ezra@atwoki.com>
+ */
 var unirest     = require('unirest');
 
 exports.instance = function(endpoint, creds) {

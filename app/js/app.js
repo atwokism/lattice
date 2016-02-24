@@ -1,9 +1,7 @@
 /**
- * Created with JetBrains WebStorm.
- * User: atwoki
- * Date: 2013/10/28
- * Time: 11:28 PM
- * To change this template use File | Settings | File Templates.
+ * Angular bootstrap
+ *
+ * @author Ezra K <ezra@atwoki.com>
  */
 angular.module('lattice',['ngResource','ngRoute','lattice.services','lattice.controllers', 'lattice.directives' ], function() {
         // configure services

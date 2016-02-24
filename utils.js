@@ -1,5 +1,5 @@
 /**
- * @author ezrak
+ * @author Ezra K <ezra@atwoki.com>
  *
  * Utilities
  */

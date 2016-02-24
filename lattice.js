@@ -1,3 +1,8 @@
+/**
+ * Lattice server (expressjs)
+ *
+ * @author Ezra K <ezra@atwoki.com>
+ */
 #!/bin/env node
 var express     = require('express');
 var fs          = require('fs');

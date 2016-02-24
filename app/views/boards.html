@@ -2,7 +2,7 @@
     <div id="myboards" class="span5">
         <div>
             <ul class="nav nav-pills nav-justified nav-stacked">
-                <li ng-repeat="board in viewmodel.boards" class="{{ active(board) }}" id="{{ board.id }}">
+                <li ng-repeat="board in viewmodel.boards" class="active" id="{{ board.id }}">
                     <a href=" {{ '#/board/' + board.id }}" ng-click="navclick('board', board)">
                         <div align="center">{{ board.name }}</div>
                     </a>

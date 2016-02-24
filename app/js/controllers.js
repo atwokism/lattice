@@ -1,6 +1,9 @@
 /**
- * Main Angular JS controller for Lattice.io.
- * @author: Ezra Kahimbaara <ezra@atwoki.com>
+ * Created with JetBrains WebStorm.
+ * User: atwoki
+ * Date: 2013/10/28
+ * Time: 11:33 PM
+ * To change this template use File | Settings | File Templates.
  */
 angular
 
@@ -12,7 +15,7 @@ angular
         }
     )
     
-    .controller('LatticeController', function($scope, $q, $window, latticeFactory) {
+    .controller('LatticeController', function($scope, $q, $http, latticeFactory, hydroFactory) {
         
         /* ==== CONTROLLER: NAVIGATION ==== */
         
@@ -23,10 +26,6 @@ angular
         $scope.navclick = function(ref, entity) {
             latticeFactory.setviewitem(ref, entity);
         };  
-        
-        $scope.navback = function() {
-            $window.history.back();
-        };         
         
         /* ==== CONTROLLER: VIEW MODEL ==== */
         
@@ -42,14 +41,12 @@ angular
             return latticeFactory.currentview($scope.viewmodel.boards);
         };        
 
-        $scope.boardactive = function(board) {
-            // board.active = !board.active;
-            $('#' + board.id).toggleClass('active');
-        };
-        
-        $scope.active = function(board) {
-            if (board.active == true) return 'active';
-            return '';
+        $scope.boardvisible = function(board) {
+            if (!board.lattice) {
+                board.lattice = {};
+                board.lattice.visible = false;
+            }
+            board.lattice.visible = !board.lattice.visible;
         };
         
         /* ==== CONTROLLER: SESSION ==== */
@@ -62,13 +59,8 @@ angular
             latticeFactory.signoff();
         };
         
-        $scope.isconnected = function() {
+        $scope.isConnected = function() {
             return latticeFactory.authenticated();
-        };
-        
-        $scope.tag = function() {
-            if (!$scope.viewmodel) return ' ...';
-            return $scope.viewmodel.member.fullName + ' (@' + $scope.viewmodel.member.username + ')';
         };
         
         /* ==== CONTROLLER: INIT ==== */
@@ -76,7 +68,6 @@ angular
         var boot = function() {
             latticeFactory.touch(function() {
                 if (latticeFactory.authenticated()) {
-                    $('#flashmodal').modal('show');
                     $q.all(latticeFactory.sync([
                         'members/me', 
                         'members/me/boards', 
@@ -84,7 +75,16 @@ angular
                         'members/me/notifications'
                     ])).then(function(viewmodel) {
                         $scope.viewmodel = latticeFactory.viewmodel();
-                        $('#flashmodal').modal('hide');
+                        // TODO - send key and token to server
+                        $http.post('/auth/trello', {
+                            'key': latticeFactory.key(),
+                            'token': latticeFactory.token()
+                        }).success(function(data, status, headers, config) {
+                            hydroFactory.log({
+                                'status': status,
+                                'msg': 'auth regsitered token and key'
+                            });
+                        });
                     });
                 } else {
                     $scope.disconnect();
@@ -96,12 +96,8 @@ angular
             boot();
         };
         
-        if (latticeFactory.authenticated()) {
-            $scope.viewmodel = latticeFactory.viewmodel();
-            $scope.viewmodel.cardboards = latticeFactory.cardmodel($scope.viewmodel.boards, $scope.viewmodel.cards).boards;
-        } else {
-            $scope.disconnect();
-        }
+        $scope.viewmodel = latticeFactory.viewmodel();
+        $scope.viewmodel.cardboards = latticeFactory.cardmodel($scope.viewmodel.boards, $scope.viewmodel.cards).boards;
         
     })
     

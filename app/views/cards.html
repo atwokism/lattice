@@ -2,7 +2,7 @@
     <div class="span5" id="mcards1">
         <div ng-repeat="board in viewmodel.cardboards">
             <div class="well" ng-if="board.cards.length > 0">
-                <p><small><strong>{{ board.name }}</strong></small></p>
+                <p><small>{{ board.name }}</small></p>
                 <div ng-repeat="card in board.cards">
                     <div align="left span5">
                         <small>

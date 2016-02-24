@@ -4,11 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lattice - A peronsalised view on Trello</title>
-    <!--link href="css/bootstrap-3.3.2.css" rel="stylesheet">
-    <link href="css/bootstrap-theme-3.3.2.css" rel="stylesheet"-->
-    <link href="css/bootstrap-2.3.2.css" rel="stylesheet">
-    <link href="css/bootstrap-responsive-2.3.2.css" rel="stylesheet">
+    <title>lattice</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <style>
         body {
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the top bar */
@@ -21,59 +19,44 @@
             <div class="span6 offset4">
                 <div class="row well">
                     <div class="span6">
-                        <h3>Lattice.io</h3>
+                        <h3>lattice.io</h3>
                         <div>
                             <form class="form-inline" onsubmit="return false;" id="access_form1">
-                                <div ng-if="isconnected() === false">
+                                <div ng-if="isConnected() === false">
                                     <button class="btn btn-primary" type="button" id="signin_button"
                                             ng-click="connect('/lattice/app/index.html#/boards', '1hour')">Sign in</button>
                                 </div>
-                                <div ng-if="isconnected()">
+                                <div ng-if="isConnected()">
                                     <button class="btn btn-primary" type="button" id="signout_button"
-                                                ng-click="disconnect()">Sign out {{ tag() }}</button>
+                                                ng-click="disconnect()">Sign out {{ viewmodel.member.fullName + ' (@' + viewmodel.member.username + ')' }}</button>
                                 </div>
                             </form>
                         </div>
                     </div>
-                </div>    
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="span6 offset4">
-                <div class="row well" ng-if="isconnected()">
+                <div class="row well" ng-if="isConnected()">
                     <div class="span6" id="navbar">
                         <div align="center">
                             <ul class="nav nav-pills" id="navlist">
                                 <li class="active" id="navboards"><a ng-click="navto('boards')">Boards  <span class="badge">{{ viewmodel.boards.length }}</span></a></li>
                                 <li id="navcards"><a ng-click="navto('cards')">Cards  <span class="badge">{{ viewmodel.cards.length }}</span></a></li>
                                 <li id="navactivity"><a ng-click="navto('activity')">Inbox  <span class="badge">{{ viewmodel.actions.length }}</span></a></li>
-                            </ul>    
+                            </ul>
                         </div>
                     </div>
                     <div class="span6" id="view">
-                        <div id="spaview" ng-view></div>
-                    </div>    
+                        <div ng-view></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="flashmodal" class="modal hide">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                    <div class="modal-body">
-                         <div>
-                             <h3>loading...</h3>    
-                         </div>
-                    </div>                                    
-                </div>
-            </div>                            
         </div>
     </div>
     <!-- SCRIPTS: BEGIN -->
         <script src="js/lib/jquery-1.10.1.js"></script>
-        <!--script src="js/lib/bootstrap-3.3.2.js"></script-->
-        <script src="js/lib/bootstrap-2.3.2.js"></script>
-        <script src="js/lib/bootstrap-modal-2.3.2.js"></script>
-        <script src="js/lib/hydro-0.0.1.js"></script>
         <script src="js/lib/pouchdb-3.2.1.js"></script>
         <script src="js/lib/angular-1.2.13.js"></script>
         <script src="js/lib/angular-resource-1.2.13.js"></script>
@@ -83,7 +66,7 @@
         <script src="js/controllers.js"></script>
         <script src="js/services.js"></script>
         <script src="js/directives.js"></script>
-        <script src="https://api.trello.com/1/client.js?key=eb3232bb891f397a7697bb5fc91818f0" type="text/javascript"></script>
+        <script src="/client/trello" type="text/javascript"></script>
     <!-- SCRIPTS: END -->
 </body>
 </html>

@@ -1,12 +1,12 @@
 <div class="row">
     <div class="span6">
         <div class="row">
-            <div class="span5 lead">
+            <div class="span6 lead">
                 <p class="lead">Action: {{ currentaction().type }} by {{ currentaction().memberCreator.username }}</p>
             </div>     
         </div>
         <ul class="nav nav-pills" id="navactionlist">
-            <li class="active" id="navactiondone"><a ng-click="navback()">Done</span></a></li>
+            <li class="active" id="navactiondone"><a ng-click="navto('activity')">Done</span></a></li>
         </ul>
     </div>
 </div>

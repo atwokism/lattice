@@ -1,7 +1,3 @@
-/**
- * Angular JS directives for Lattice.io.
- * @author: Ezra Kahimbaara <ezra@atwoki.com>
- */
 angular
 
     .module(

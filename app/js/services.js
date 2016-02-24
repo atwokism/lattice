@@ -1,6 +1,9 @@
 /**
- * Angular JS services for Lattice.io.
- * @author: Ezra Kahimbaara <ezra@atwoki.com>
+ * Created with JetBrains WebStorm.
+ * User: atwoki
+ * Date: 2013/10/28
+ * Time: 11:40 PM
+ * To change this template use File | Settings | File Templates.
  */
 angular
 
@@ -73,7 +76,8 @@ angular
         factory.touch = function(successFn) {
             client.authorize({ 
                 "interactive": false,
-                "success": successFn
+                "success": successFn,
+                "error": factory.disconnect
             });    
         };
         
@@ -98,7 +102,8 @@ angular
         factory.disconnect = function() {
             if (client) {
                 return client.deauthorize();
-            }    
+            }
+            return undefined;
         };
         
         factory.isloggedin = function() {
@@ -124,41 +129,22 @@ angular
             });    
         };
         
-        factory.bind = function(method, target) {
-            return this.bind(method, target, undefined);
-        };
-        
-        factory.bind = function(method, target, data) {
+        factory.bind = function(target) {
             var deferred = $q.defer();
-            if (data) {
-                client.put(method, target, data, function(results) {
-                    if (!results) {
-                        deferred.reject('failed to send data [' + data + '] to target [' + target + ']');
-                    } else {
-                        deferred.resolve({
-                            "target": target,
-                            "data": data,
-                            "results": results
-                        });    
-                    }
-                    factory.notify(target, results);                
-                });                
-            } else {
-                client.rest(method, target, function(results) {
-                    if (!results) {
-                        deferred.reject('no results for target [' + target + ']');
-                    } else {
-                        deferred.resolve({
-                            "target": target,
-                            "results": results
-                        });    
-                    }
-                    factory.notify(target, results);
-                });    
-            }
+            client.get(target, function(results) {
+                if (!results) {
+                    deferred.reject('no results for target: ' + target)
+                } else {
+                    deferred.resolve({
+                        "target": target,
+                        "results": results
+                    });    
+                }
+                factory.notify(target, results);
+            }); 
             return deferred.promise;
         };
-
+        
         return factory;
     })
     
@@ -173,32 +159,27 @@ angular
         
         var init = function() {
             // register observers so we may bind(target) to them
-            trelloFactory.register('get_member', 'members/me', function(member) {
+            trelloFactory.register('member', 'members/me', function(member) {
                 viewmodel.member = member;
             });
             
-            trelloFactory.register('get_boards', 'members/me/boards', function(boards) {
+            trelloFactory.register('boards', 'members/me/boards', function(boards) {
                 viewmodel.boards = boards;
                 $.each(viewmodel.boards, function(i, board) {
                     trelloFactory.bind( 'boards/' + board.id + '/lists').then(function(payload) {
-                        board.lists = payload.results; 
-                        board.active = false;
+                        board.lists = payload.results;   
                     });
                 });
             });
             
-            trelloFactory.register('get_cards', 'members/me/cards', function(cards) {
+            trelloFactory.register('cards', 'members/me/cards', function(cards) {
                 viewmodel.cards = cards;
             });
             
-            trelloFactory.register('post_cards', 'members/me/cards', function(cards) {
-                viewmodel.cards = cards;
-            });            
-            
-            trelloFactory.register('get_actions', 'members/me/notifications', function(actions) {
+            trelloFactory.register('actions', 'members/me/notifications', function(actions) {
                 viewmodel.actions = actions;
             });            
-        }; 
+        };
         
         factory.helper = {
             "cardsperlist": function(list, cards) {
@@ -209,17 +190,6 @@ angular
                     };    
                 });
                 return c;  
-            },
-            "memberscardsperlist": function(list, cards, member) {
-                var c = [];
-                $.each(this.cardsperlist(list, cards), function(n, e) {
-                    $.each(e.idMembers, function(i, m) {
-                        if (m == member.id) {
-                            c.push(e);
-                        }                        
-                    });
-                });
-                return c;
             },
             "cardsperboard": function(board, cards) {
                 var c = [];
@@ -243,17 +213,9 @@ angular
         factory.sync = function(keys) {
             var promises = [];
             $.each(keys, function(i, key) {
-                promises.push(trelloFactory.bind('GET', key));
+                promises.push(trelloFactory.bind(key));
             });
             return promises;
-        };
-        
-        factory.upload = function(payloads) {
-            var promises = []; 
-            $.each(payloads, function(i, payload) {
-                promises.push(trelloFactory.bind('POST', payload.key, payload.data));
-            });
-            return promises;            
         };
         
         factory.clear = function() {
@@ -295,10 +257,10 @@ angular
                     "name": b.name,
                     "cards": []
                 };
-                if (!b.lists) b.lists = []; 
+                if (!b.lists) return model; // exit
                 var lists = b.lists;
                 $.each(lists, function(x, l) {
-                    var cardset = factory.helper.memberscardsperlist(l, cards, viewmodel.member);  
+                    var cardset = factory.helper.cardsperlist(l, cards);  
                     $.each(cardset, function(n, c) {
                         board.cards.push({
                             "name": c.name,
@@ -329,6 +291,14 @@ angular
             });
             $('#nav' + name).toggleClass('active');
             $location.url('/' + name);            
+        };
+        
+        factory.token = function() {
+            return trelloFactory.token();
+        };
+        
+        factory.key = function() {
+            return trelloFactory.apikey();
         };
         
         init();  

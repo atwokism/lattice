@@ -11,5 +11,7 @@ Things you should do:
     `npm install` [Enter]
   * Run:
     `node lattice` [Enter]
+  * Browse:
+    `localhost:8080`
 
 That's it!

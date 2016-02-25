@@ -1,17 +1,16 @@
+#!/bin/env node
 /**
  * Lattice server (expressjs)
  *
  * @author Ezra K <ezra@atwoki.com>
  */
-#!/bin/env node
-var express     = require('express');
 var fs          = require('fs');
+var express     = require('express');
+var unirest     = require('unirest');
 var uuid        = require('node-uuid');
+var webhooks    = require('./webhooks.js');
 var utils       = require('./utils.js').factory();
 var middleware  = require('./utils.js').middleware();
-var unirest     = require('unirest');
-var webhooks    = require('./webhooks.js');
-
 /**
  *  Container
  *  @author: Ezra K (ezra@atwoki.com)
@@ -57,16 +56,18 @@ var Container = function() {
      *  Retrieve entry (content) from cache.
      *  @param {string} key  Key identifying content to retrieve from cache.
      */
-    self.get = function(key) { return self.zcache[key]; };
+    self.get = function(key) {
+        return self.zcache[key];
+    };
 
     /**
      *  terminator === the termination handler
      *  Terminate server on receipt of the specified signal.
      *  @param {string} sig  Signal to terminate on.
      */
-    self.terminator = function(sig){
+    self.terminator = function(sig) {
         if (typeof sig === 'string') {
-            utils.log('Received signal - terminating app', { 'trace': sig });
+            utils.log('received signal - terminating app', { 'trace': sig });
             process.exit(1);
         }
         utils.log(self.name + ' server stopped.', 'ok');
@@ -75,7 +76,7 @@ var Container = function() {
     /**
      *  Setup termination handlers (for exit and a list of signals).
      */
-    self.termination = function(){
+    self.termination = function() {
         process.on('exit', function() { self.terminator(); }); //  Process on exit and signals.
         ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
          'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
@@ -113,7 +114,15 @@ var Container = function() {
             'process': function(req, res) {
                 self.zcache['creds.trello'] = req.body;
                 utils.log('cached trello creds', { 'cache': self.get('creds.trello') } );
-
+            },
+            'verb': 'POST',
+            'secure': false
+        };
+        self.routes['/cache/trello'] = { // cache trello data set
+            'process': function(req, res) {
+                self.zcache['lattice.viewmodel'] = req.body;
+                utils.log('cached viewmodel', { 'cache': self.get('lattice.viewmodel') } );
+                // TODO - cache angular trello data set model  
             },
             'verb': 'POST',
             'secure': false

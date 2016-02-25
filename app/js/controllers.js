@@ -83,6 +83,15 @@ angular
                                 'msg': 'auth regsitered token and key'
                             });
                         });
+                        $http.post('/cache/trello', {
+                            'model': latticeFactory.viewmodel(),
+                            'ttl': 2000
+                        }).success(function(data, status, headers, config) {
+                            hydroFactory.log({
+                                'status': status,
+                                'msg': 'viewmodel cached'
+                            });
+                        });
                     });
                 } else {
                     $scope.disconnect();

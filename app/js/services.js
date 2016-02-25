@@ -177,6 +177,8 @@ angular
             trelloFactory.register('actions', 'members/me/notifications', function(actions) {
                 viewmodel.actions = actions;
             });
+
+            viewmodel.alerts = [];
         };
 
         factory.helper = {

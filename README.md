@@ -1,6 +1,6 @@
-# README for a newly created project.
+# lattice
 
-Lattice - a [Trello](http://www.trello.com) sideburn
+A [Trello](http://www.trello.com) sideburn
 
 Things you should do:
 

@@ -4,9 +4,9 @@ A [Trello](http://www.trello.com) sideburn
 
 Things you should do:
 
-  * Clone lattice:
+  * Clone:
     `git clone https://github.com/atwokism/lattice` [Enter]
-  * Install dependencies:
+  * Install:
     `cd lattice` [Enter] then
     `npm install` [Enter]
   * Run:

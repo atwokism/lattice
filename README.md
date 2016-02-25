@@ -2,14 +2,14 @@
 
 Lattice - a [Trello](http://www.trello.com) sideburn
 
-There are a couple of things you should do first:
+Things you should do:
 
-  * Clone lattice
+  * Clone lattice:
     `git clone https://github.com/atwokism/lattice` [Enter]
-  * Install dependencies
-    `cd lattice` [Enter]
+  * Install dependencies:
+    `cd lattice` [Enter] then
     `npm install` [Enter]
-  * Run
+  * Run:
     `node lattice` [Enter]
 
 That's it!

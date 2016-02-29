@@ -15,11 +15,11 @@ var middleware  = require('./utils.js').middleware();
  *  Container
  *  @author: Ezra K (ezra@atwoki.com)
  */
-var Container = function() {
+var Container = function(configuration) {
 
     var self = this;
 
-    self.name = 'lattice';
+    self.api = configuration;
 
     /*  ================================================================  */
     /*  Helper functions.                                                 */
@@ -29,11 +29,8 @@ var Container = function() {
      *  Set up server IP address and port # using env variables/defaults.
      */
     self.variables = function() {
-        var v = function(ip, port) {
-            self.ipaddress = ip;
-            self.port      = port;
-        };
-        v('127.0.0.1', 8080);
+        self.ipaddress = self.api.server.host;
+        self.port = self.api.server.port;
     };
 
     /**
@@ -43,13 +40,14 @@ var Container = function() {
         if (typeof self.zcache === 'undefined') {
             self.zcache = {
                 'index.html': '',
-                'trello.api.key': '',
-                'trello.api.client': ''
+                'provider.api.key': '',
+                'provider.api.client': '',
+                'provider.creds': ''
             };
         }
         self.zcache['index.html'] = fs.readFileSync('./app/index.html'); //  Local cache for static content.
-        self.zcache['trello.api.key'] = fs.readFileSync('./app/key');
-        self.zcache['trello.api.client'] = 'https://api.trello.com/1/client.js?key=' + self.get('trello.api.key'); //  Trello API key = todo read sync url
+        self.zcache['provider.api.key'] = fs.readFileSync('./app/key');
+        self.zcache['provider.api.client'] = self.api.client('provider.api.key'); //  provider API key = todo read sync url
     };
 
     /**
@@ -70,7 +68,7 @@ var Container = function() {
             utils.log('received signal - terminating app', { 'trace': sig });
             process.exit(1);
         }
-        utils.log(self.name + ' server stopped.', 'ok');
+        utils.log(self.api.name + ' server stopped.', 'ok');
     };
 
     /**
@@ -102,41 +100,41 @@ var Container = function() {
             'verb': 'GET',
             'secure': false
         };
-        self.routes['/client/trello'] = { // api client
+        self.routes['/client/' + self.api.provider] = { // api client
             'process': function(req, res) {
                 res.setHeader('Content-Type', 'text/javascript');
-                res.redirect(self.get('trello.api.client'));
+                res.redirect(self.get('provider.api.client'));
             },
             'verb': 'GET',
             'secure': false
         };
-        self.routes['/auth/trello'] = { // api key and token
+        self.routes['/auth/' + self.api.provider] = { // api key and token
             'process': function(req, res) {
-                self.zcache['creds.trello'] = req.body;
-                utils.log('cached trello creds', { 'cache': self.get('creds.trello') } );
+                self.zcache['provider.creds'] = req.body;
+                utils.log('cached creds', { 'cache': self.get('provider.creds'), 'api': self.api } );
             },
             'verb': 'POST',
             'secure': false
         };
-        self.routes['/cache/trello'] = { // cache trello data set
+        self.routes['/cache/' + self.api.provider] = { // cache provider data set
             'process': function(req, res) {
                 self.zcache['lattice.viewmodel'] = req.body;
                 utils.log('cached viewmodel', { 'cache': self.get('lattice.viewmodel') } );
-                // TODO - cache angular trello data set model  
+                // TODO - cache angular provider data set model
             },
             'verb': 'POST',
             'secure': false
         };
-        self.routes['/callback/trello'] = { // api callback url
+        self.routes['/callback/' + self.api.provider] = { // api callback url
             'process': function(req, res) {
                 // TODO - process webhook callback
             },
             'verb': 'POST',
             'secure': false
         };
-        self.routes['/webhooks/trello/:command'] = { // api callback url
+        self.routes['/webhooks/' + self.api.provider + '/:command'] = { // api callback url
             'process': function(req, res) {
-                var creds = self.get('creds.trello');
+                var creds = self.get('provider.creds');
                 var payload = req.body;
                 var cmd = req.param('command');
                 self.webhooks(creds, cmd, payload, function(data) {
@@ -150,7 +148,7 @@ var Container = function() {
     };
 
     self.webhooks = function(creds, command, payload, callback) {
-        var endpoint = 'https://api.trello.com/1/';
+        var endpoint = self.api.endpoint;
         var hook = webhooks.instance(endpoint, creds);
         switch(command) { // TODO - all commands
             case 'register':
@@ -226,14 +224,23 @@ var Container = function() {
      */
     self.start = function() {
         self.app.listen(self.port, self.ipaddress, function() {
-            utils.log(self.name + ' server started', { "ip": self.ipaddress, "port": self.port });
+            utils.log(self.api.name + ' server started', { "ip": self.ipaddress, "port": self.port });
         });
     };
 
 };   /*  Container  */
-
 /**
  *  main():  Main code.
  */
-new Container().initialize();
-// the end
+new Container({
+    'name': 'lattice',
+    'provider': 'trello',
+    'endpoint': 'https://api.trello.com/1/',
+    'client': function(key) {
+        return this.endpoint + 'client.js?key=' + key;
+    },
+    'server': {
+        'host': '127.0.0.1',
+        'port': 8080
+    }).initialize();
+/* the end */

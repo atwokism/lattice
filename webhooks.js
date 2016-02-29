@@ -1,15 +1,16 @@
 /**
- * Webhooks instance
+ * Webhook instance
  *
  * @author Ezra K <ezra@atwoki.com>
  */
-var unirest     = require('unirest');
+var unirest   = require('unirest');
 
 exports.instance = function(endpoint, creds) {
 
     var h = {};
 
     var base = endpoint + 'token/' + creds.token;
+
     var client = function(method, body, command, callback) {
         var proxy = unirest(method, base + command);
         proxy.header('Accept', 'application/json').header('Content-Type', 'application/json');

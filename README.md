@@ -8,7 +8,8 @@ Things you should do:
     `git clone https://github.com/atwokism/lattice` [Enter]
   * Install:
     `cd lattice` [Enter] then
-    `npm install` [Enter]
+    `npm install` [Enter] then
+    `vi ./app/key` [Enter] then add your API key and save.
   * Run:
     `node lattice` [Enter]
   * Browse:
